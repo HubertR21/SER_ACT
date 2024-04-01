@@ -1,1 +1,0 @@
-Encoded features can be found to download at this [link](https://wutwaw-my.sharepoint.com/:u:/g/personal/01151411_pw_edu_pl/EUUvmcvZg-9Bmr4bMaXeITkBJ8vbEWriWc2NOgMBfkjLgw?e=UAYFdw).

@@ -7,8 +7,8 @@ savee/
 tess/
 esd/
 jl-corpus/
-dataset/
-dataset.zip
+*.zip
+*.pkl
 
 
 # Byte-compiled / optimized / DLL files
