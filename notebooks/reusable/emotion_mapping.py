@@ -17,12 +17,18 @@ class EmotionMap(Enum):
     Sad = (-1, -0.5)
     Surprise = (0.75, 0.5)
 
-    def map(labels, component: int, *, discrete: bool):
+    def map(labels, component: int, *, discrete: bool = False):
         continuous = np.array([getattr(EmotionMap, x).value[component] for x in labels])
         if not discrete:
             return continuous
         return np.array(continuous*4+4, dtype=np.int32)
     
+    def map_both(labels, *, discrete: bool = False):
+        return np.stack((
+            EmotionMap.map(labels, 0, discrete=discrete),
+            EmotionMap.map(labels, 1, discrete=discrete),
+        ), axis=1)
+
     def reverse_map(valence, arousal, *, discrete: bool):
         point = np.array([valence, arousal])
         if discrete:
@@ -62,3 +68,20 @@ class TwoModelWrapper:
 class SklearnTwoModelWrapper(TwoModelWrapper):
     def __init__(self, baseModel):
         super().__init__(clone(baseModel), clone(baseModel))
+
+class KerasWrapper:
+    def __init__(self, model):
+        self.model = model
+
+    def compile(self, *args, **kwargs):
+        return self.model.compile(*args, **kwargs)
+
+    def predict(self, *args, **kwargs):
+        return self.model.predict(*args, **kwargs)
+    
+    def evaluate(self, *args, **kwargs):
+        return self.model.evaluate(*args, **kwargs)
+    
+    def fit(self, X_train, Y_train, *args, validation_data, **kwargs):
+        validation_data = (validation_data[0], EmotionMap.map_both(validation_data[1]))
+        return self.model.fit(X_train, EmotionMap.map_both(Y_train), *args, validation_data=validation_data, **kwargs)
